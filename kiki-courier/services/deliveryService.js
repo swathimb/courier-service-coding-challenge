@@ -1,34 +1,39 @@
- function createDeliveryCombinations(packages, maxWeight) {
-  let sortedByWeight = [...packages].sort((a, b) => b.weight - a.weight); // sort descending
-  let combinations = [];
+function createDeliveryCombinations(packages, maxWeight) {
+    let sortedByWeight = [...packages].sort((a, b) => b.weight - a.weight); // sort descending
+    let combinations = [];
+    while (sortedByWeight.length > 0) {
+        let resultCombination = [];
+        for (let i = 0; i < sortedByWeight.length; i++) {
+            let j=0;
+            let totalWeight = sortedByWeight[i].weight;
+            let tempCombination = [sortedByWeight[i]];
+            while(j < sortedByWeight.length) {
+                if(i !== j && (totalWeight + sortedByWeight[j].weight) <= maxWeight) {
+                    totalWeight += sortedByWeight[j].weight;
+                    tempCombination.push(sortedByWeight[j]);
+                }
+                j++;
+            }
+            if (tempCombination.length > 0) {
+                resultCombination.push(tempCombination);
+            }
+        }
+        //Remove redundant combinations
+        resultCombination = uniqueCombinations(resultCombination);
 
-  while (sortedByWeight.length > 0) {
-    let combo = [];
-    let total = 0;
+        // Find max length among subsets
+        let maxLen = Math.max(...resultCombination.map(sub => sub.length));
 
-    for (let i = 0; i < sortedByWeight.length; i++) {
-      if (total + sortedByWeight[i].weight <= maxWeight) {
-        total += sortedByWeight[i].weight;
-        combo.push(sortedByWeight[i]);
-      }
+        // Filter to only those with max length
+        let maxSubsets = resultCombination.filter(sub => sub.length === maxLen);
+
+        // Choose the combination with the heaviest first package
+        maxSubsets.sort((a, b) => b[0].weight - a[0].weight);
+        resultCombination = maxSubsets[0];
+
+        combinations.push(resultCombination);
+        sortedByWeight = sortedByWeight.filter(n => !resultCombination.includes(n));
     }
-
-    if (combo.length === 0) break;
-    combinations.push(combo);
-    sortedByWeight = sortedByWeight.filter(n => !combo.includes(n));
-
-  }
-  // Sort combination:
-    combinations.sort((a, b) => {
-      if (b.length !== a.length) {
-        return b.length - a.length;
-      }
-      if (a.length === 1 && b.length === 1) {
-        return b[0] - a[0];
-      }
-      return 0;
-    });
-
     return combinations;
 }
 
@@ -52,6 +57,28 @@ function calculateDeliveryTimes(deliveryCombinations, vehiclesInfo) {
       vehicles[nextVehicleIndex] += deliveryTime;
     }
   }
+}
+
+// Function to create a unique signature for each array
+function getSignature(arr) {
+  // Sort objects by 'id' to handle different orderings
+  return arr
+    .map(obj => obj.id)        // Extract 'id' from each object
+    .sort((a, b) => a - b)    // Sort numerically
+    .join(',');                // Join into a string signature
+}
+
+function uniqueCombinations(data) {
+    const seen = new Set();
+    const unique = data.filter(arr => {
+    const signature = getSignature(arr);
+    if (seen.has(signature)) {
+        return false;
+    }
+    seen.add(signature);
+    return true;
+    });
+    return unique;
 }
 
 export { createDeliveryCombinations, calculateDeliveryTimes };
