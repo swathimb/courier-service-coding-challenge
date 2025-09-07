@@ -123,7 +123,7 @@ function handleVehicleDetails(line) {
   rl.close();
 }
 
-function handleDeliveryCombinations(packages, maxWeight) {
+function createDeliveryCombinations(packages, maxWeight) {
   let sortedByWeight = [...packages].sort((a, b) => b.weight - a.weight); // sort descending
   let combinations = [];
   while (sortedByWeight.length > 0) {
@@ -193,7 +193,7 @@ rl.on("line", (line) => {
 });
 
 rl.on("close", () => {
-  const deliveryCombinations = handleDeliveryCombinations(packages, vehiclesInfo.maxWeight);
+  const deliveryCombinations = createDeliveryCombinations(packages, vehiclesInfo.maxWeight);
   calculateDeliveryTimes(deliveryCombinations, vehiclesInfo);
   const output = deliveryCombinations.flat().sort((a, b) => a.id - b.id);
   console.log(output.map(pkg => `${pkg.pkgId} ${pkg.discount} ${pkg.totalCost} ${pkg.estimatedDeliveryTime}`).join("\n"));
