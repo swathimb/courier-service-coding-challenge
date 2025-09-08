@@ -9,7 +9,7 @@ This is a Node.js command-line application to calculate delivery costs and estim
 
 ## How to Run
 
-1. Clone the repository or download the files. (https://github.com/swathimb/courier-service-coding-challenge.git)
+1. Download the files.
 2. Open a terminal and navigate to the project folder.
 3. Run the app with the following command:
 

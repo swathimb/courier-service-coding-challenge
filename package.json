@@ -7,15 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/swathimb/courier-service-coding-challenge.git"
-  },
   "keywords": [],
   "author": "Swathi MB",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/swathimb/courier-service-coding-challenge/issues"
-  },
-  "homepage": "https://github.com/swathimb/courier-service-coding-challenge#readme"
+  "license": "ISC"
 }
