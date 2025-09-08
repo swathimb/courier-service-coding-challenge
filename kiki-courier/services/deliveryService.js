@@ -1,5 +1,10 @@
 function createDeliveryCombinations(packages, maxWeight) {
-    let sortedByWeight = [...packages].sort((a, b) => b.weight - a.weight); // sort descending
+    let sortedByWeight = [...packages].sort((a, b) => {
+      //if same weight, sort by distance ascending
+      if (a.weight === b.weight) return a.distance - b.distance;
+      return b.weight - a.weight;
+    }); // sort by weight descending
+    console.log("Sorted Packages by weight:", sortedByWeight);
     let combinations = [];
     while (sortedByWeight.length > 0) {
         let resultCombination = [];

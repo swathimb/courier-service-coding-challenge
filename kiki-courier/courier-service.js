@@ -132,6 +132,6 @@ rl.on("close", () => {
     return;
   }
   console.log("\nOutput:\n");
-  console.log(output.map(pkg => `${pkg.pkgId} ${pkg.discount} ${pkg.totalCost} ${pkg.estimatedDeliveryTime}`).join("\n"));
+  console.log(output.map(pkg => `${pkg.pkgId} ${pkg.discount} ${pkg.totalCost} ${parseFloat(pkg.estimatedDeliveryTime).toFixed(2)}`).join("\n"));
 
 });
