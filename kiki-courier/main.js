@@ -1,21 +1,16 @@
 import readline from "readline";
 
-import { getDiscount } from "./services/offerService.js";
-import {
-  createDeliveryCombinations,
-  calculateDeliveryTimes,
-} from "./services/deliveryService.js";
-import Package from "./models/Package.js";
+import CourierService from "./courierService.js";
 
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
 
-let baseCost, noOfPackages;
-let packages = [];
-let vehiclesInfo = {};
+let noOfPackages;
 let currentPackage = 0;
+
+const courierService = new CourierService();
 
 function handleBaseInput(line) {
   let [base_cost, no_of_packages] = line.trim().split(" ");
@@ -28,7 +23,8 @@ function handleBaseInput(line) {
     );
     return;
   } 
-    baseCost = base_cost;
+  
+    courierService.baseDeliveryCost = base_cost;
     noOfPackages = no_of_packages;
     console.log(
       "Enter package details in the format -- pkg_id    pkg_weight_in_kg    distance_in_km    offer_code"
@@ -36,7 +32,7 @@ function handleBaseInput(line) {
     console.log("Enter details of package", currentPackage + 1);
 }
 
-function handlepackageDetails(line) {
+function handlePackageInput(line) {
   const [pkgId, weightStr, distStr, offerCode] = line.trim().split(" ");
   const weight = parseInt(weightStr);
   const distance = parseInt(distStr);
@@ -52,14 +48,14 @@ function handlepackageDetails(line) {
     return;
   }
 
-  const deliveryCost = baseCost + weight * 10 + distance * 5;
-  const discount = getDiscount(deliveryCost, offerCode, distance, weight);
-  const totalCost = deliveryCost - discount;
-  const pckg = new Package(currentPackage + 1, pkgId, weight, distance, offerCode);
-  pckg.discount = discount;
-  pckg.totalCost = totalCost;
-  
-  packages.push(pckg);
+  const packageDetails = {
+    pkgId,
+    weight,
+    distance,
+    offerCode
+  }
+
+  courierService.packageDetails(packageDetails, currentPackage + 1);
   currentPackage++;
   
   if (currentPackage === noOfPackages) {
@@ -71,11 +67,12 @@ function handlepackageDetails(line) {
   }
 }
 
-function handleVehicleDetails(line) {
+function handleVehicleInput(line) {
   const [noVehiclesStr, speedStr, maxWeightStr] = line.trim().split(" ");
   const noVehicles = parseInt(noVehiclesStr);
   const speed = parseInt(speedStr);
   const maxWeight = parseInt(maxWeightStr);
+
   if (
     isNaN(noVehicles) ||
     isNaN(speed) ||
@@ -83,15 +80,19 @@ function handleVehicleDetails(line) {
     noVehicles <= 0
   ) {
     console.log(
-      "Invalid input. Please enter vehicle details in valid format -- no_of_vehicles    max_speed    max_carriable_weight."
+      "Invalid input. Please enter vehicle details in valid format -- no_of_vehicles(>0)    max_speed    max_carriable_weight."
     );
     return;
   }
-  vehiclesInfo = {
+
+  const vehiclesInfo = {
     noVehicles,
     speed,
     maxWeight,
   };
+
+  courierService.vehicleDetails(vehiclesInfo);
+
   rl.close();
 }
 
@@ -106,15 +107,15 @@ console.log(
 
 rl.on("line", (line) => {
   try{
-    if (!baseCost) {
+    if (!courierService.baseDeliveryCost ) {
       // Base Delivery Cost and Number of Packages
       handleBaseInput(line);
     } else if (currentPackage < noOfPackages) {
       // Package details
-      handlepackageDetails(line);
-    } else if (!Object.keys(vehiclesInfo).length) {
+      handlePackageInput(line);
+    } else if (!courierService.vehiclesInfo.noVehicles) {
       // Vehicle details
-      handleVehicleDetails(line);
+      handleVehicleInput(line);
     }
   } catch(err){
     console.log("Error processing input:", err.message);
@@ -124,9 +125,8 @@ rl.on("line", (line) => {
 });
 
 rl.on("close", () => {
-  const deliveryCombinations = createDeliveryCombinations(packages, vehiclesInfo.maxWeight);
-  calculateDeliveryTimes(deliveryCombinations, vehiclesInfo);
-  const output = deliveryCombinations.flat().sort((a, b) => a.id - b.id);
+
+  const output = courierService.getDeliveryTime();
   if(!output || output.length === 0) {
     console.log("\n***No Input to process***\n");
     return;
