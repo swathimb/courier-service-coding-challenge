@@ -11,6 +11,7 @@ let noOfPackages;
 let currentPackage = 0;
 
 const courierService = new CourierService();
+courierService.getOffers();
 
 function handleBaseInput(line) {
   let [base_cost, no_of_packages] = line.trim().split(" ");
