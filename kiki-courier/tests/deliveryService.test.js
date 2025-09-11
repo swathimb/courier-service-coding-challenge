@@ -1,7 +1,7 @@
 import { describe, expect, test, jest } from '@jest/globals';
 
 import { mockPackages1, mockPackages2 } from './mocks/mockPackages';
-import {createDeliveryCombinations} from '../services/deliveryService.js';
+import {createDeliveryCombinations, calculateDeliveryTimes} from '../services/deliveryService.js';
 
 describe('Delivery Combination', () => {
   test('Should return expected combinations for given weight', () => {
@@ -20,5 +20,16 @@ describe('Delivery Combination', () => {
     expect(combinations.length).toBe(5);
     expect(combinations[0][0].weight).toBe(combinations[0][1].weight);
     expect(combinations[0][0].distance).toBeLessThan(combinations[0][1].distance);
+  });
+});
+
+describe('Delivery Time', () => {
+  test('should calculate delivery time based on distance and vehicle speed', () => {
+    const maxWeight = 200;
+    const vehicle = { speed: 50, noVehicles: 2 };
+    const combinations = createDeliveryCombinations(mockPackages1, maxWeight);
+    expect(combinations[0][0].estimatedDeliveryTime).toBeUndefined();
+    calculateDeliveryTimes(combinations, vehicle);
+    expect(combinations[0][0].estimatedDeliveryTime).toBeDefined();
   });
 });
