@@ -1,17 +1,18 @@
-import { describe, expect, test, jest } from '@jest/globals';
+import { describe, expect, test } from '@jest/globals';
 
 import { mockPackages1, mockPackages2 } from './mocks/mockPackages';
+import { mockPackageCombination } from './mocks/mockPackageCombination.js';
 import {createDeliveryCombinations, calculateDeliveryTimes} from '../services/deliveryService.js';
 
 describe('Delivery Combination', () => {
   test('Should return expected combinations for given weight', () => {
     const maxWeight = 200;
     const combinations = createDeliveryCombinations(mockPackages1, maxWeight);
-    expect(combinations.length).toBe(4);
-    expect(combinations[0].length).toBe(2);
-    expect(combinations[1].length).toBe(1);
-    expect(combinations[2].length).toBe(1);
-    expect(combinations[3].length).toBe(1);
+    expect(combinations.length).toEqual(mockPackageCombination.length);
+    expect(combinations[0].length).toEqual(mockPackageCombination[0].length);
+    expect(combinations[1].length).toEqual(mockPackageCombination[1].length);
+    expect(combinations[2].length).toEqual(mockPackageCombination[2].length);
+    expect(combinations[3].length).toEqual(mockPackageCombination[3].length);
   });
 
   test('should sort by distance in ascending order if weight is same', () => {
