@@ -38,6 +38,22 @@ PKG5 115 95 NA <br>
 npm test
 ```
 
+## Offers Data in Excel File
+The offer details are maintained in the offers.xlsx file located at:
+```bash
+kiki-courier/data/offers.xlsx
+```
+You can add, update, or remove offer entries directly in this Excel file.
+
+The Excel file should have the following columns:
+
+| OFFER\_CODE | DISCOUNT | DISTANCE | WEIGHT  |
+| ----------- | -------- | -------- | ------- |
+| OFR001      | 10%      | 0-200    | 70-200  |
+| OFR002      | 7%       | 50-150   | 100-250 |
+
+Note: Ensure that the file structure and column names are preserved as expected.
+
 
 
 
